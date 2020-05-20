@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotEmpty;
+import java.sql.PreparedStatement;
 import java.time.Instant;
 
 @Data
@@ -26,6 +27,9 @@ public class User {
     @Email
     @NotEmpty(message = "Email is required")
     private String email;
+
+    @NotEmpty(message = "Password iw required")
+    private String password;
 
     private Instant created;
 
