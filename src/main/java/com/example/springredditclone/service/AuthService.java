@@ -1,6 +1,7 @@
 package com.example.springredditclone.service;
 
 import com.example.springredditclone.controller.RegisterRequest;
+import com.example.springredditclone.exception.SpringRedditException;
 import com.example.springredditclone.model.User;
 import com.example.springredditclone.model.VerificationToken;
 import com.example.springredditclone.repository.UserRepository;
@@ -9,8 +10,9 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.example.springredditclone.utils.Constants.ACTIVATION_EMAIL;
@@ -40,7 +42,7 @@ public class AuthService {
         String token = generateVerificationToken(user);
         String message = mailContentBuilder.build(
                 "Thank you for signing up to Spring Reddit, please click on the below url to activate your account : "
-                        + ACTIVATION_EMAIL + "/" + token);
+                        + "http://localhost:8085/api/auth/accountVerification/" + token);
 
 //        mailService.sendMail(new NotificationEmail("Please activate your Account",
 //                user.getEmail(), "Thank you for signing up to Spring Reddit, " +
@@ -60,4 +62,19 @@ public class AuthService {
         return token;
     }
 
+    public void verifyAccount(String token) {
+        Optional<VerificationToken> verificationToken = verificationTokenRepository.findByToken(token);
+        verificationToken.orElseThrow(() -> new SpringRedditException("Invalid Token"));
+        fetchUserAndEnable(verificationToken.get());
+    }
+
+    @Transactional
+    void fetchUserAndEnable(VerificationToken verificationToken) {
+        String username = verificationToken.getUser().getUsername();
+        User user = userRepository.findByUsername(username).orElseThrow(
+                () -> new SpringRedditException("User not foundwith name - " + username)
+        );
+        user.setEnabled(true);
+        userRepository.save(user);
+    }
 }
