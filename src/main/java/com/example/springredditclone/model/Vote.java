@@ -13,7 +13,7 @@ import javax.persistence.*;
 public class Vote {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
     private VoteType voteType;

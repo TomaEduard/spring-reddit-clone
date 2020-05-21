@@ -7,12 +7,11 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.validation.constraints.Email;
+import javax.persistence.OneToMany;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 import java.time.Instant;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -22,20 +21,18 @@ import java.time.Instant;
 public class Subreddit {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    @GeneratedValue
+    private Long id;
 
-    @NotBlank(message = "Username is required")
-    private String username;
+    @NotBlank(message = "Community name is required")
+    private String name;
 
-    @NotBlank(message = "Password is required")
-    private String password;
+    @NotBlank(message = "Description is required")
+    private String description;
 
-    @Email
-    @NotEmpty(message = "Email is requiered")
-    private String email;
+    private Instant createdDate;
 
-    private Instant created;
+    @OneToMany
+    private List<Post> posts;
 
-    private boolean enabled;
 }
