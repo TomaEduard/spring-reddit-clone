@@ -7,6 +7,7 @@ import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -17,7 +18,7 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long postId;
 
     @NotBlank(message = "Post Name cannot be empty or Null")
     private String postName;
@@ -26,14 +27,21 @@ public class Post {
     private String url;
 
     @Nullable
+    @Lob
     private String description;
 
-    @OneToMany(mappedBy = "post")
-    private List<Vote> votes;
+    private Integer voteCount = 0;
 
-    @OneToMany(mappedBy = "post")
-    private List<Comment> comments;
+    private Instant createdDate;
 
-//    @ManyToOne
-//    private User user;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId", referencedColumnName = "userId")
+    private User user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id", referencedColumnName = "id")
+    private Subreddit subreddit;
+
+
+
 }
