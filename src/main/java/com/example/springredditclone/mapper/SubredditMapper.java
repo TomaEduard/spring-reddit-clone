@@ -1,6 +1,5 @@
 package com.example.springredditclone.mapper;
 
-import com.example.springredditclone.dto.PostRequest;
 import com.example.springredditclone.dto.SubredditDto;
 import com.example.springredditclone.model.Post;
 import com.example.springredditclone.model.Subreddit;

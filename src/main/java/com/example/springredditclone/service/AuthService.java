@@ -4,6 +4,7 @@ import com.example.springredditclone.dto.RegisterRequest;
 import com.example.springredditclone.dto.AuthenticationResponse;
 import com.example.springredditclone.dto.LoginRequest;
 import com.example.springredditclone.exception.SpringRedditException;
+import com.example.springredditclone.model.NotificationEmail;
 import com.example.springredditclone.model.User;
 import com.example.springredditclone.model.VerificationToken;
 import com.example.springredditclone.repository.UserRepository;
@@ -22,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 import java.util.UUID;
+
+import static com.example.springredditclone.utils.Constants.ACTIVATION_EMAIL;
 
 @Service
 @Slf4j
@@ -48,16 +51,20 @@ public class AuthService {
         userRepository.save(user);
         log.info("User Registered Successfully, Sending Authentication Email");
 
+        // build message
         String token = generateVerificationToken(user);
         String message = mailContentBuilder.build(
                 "Thank you for signing up to Spring Reddit, please click on the below url to activate your account : "
-                        + "http://localhost:8085/api/auth/accountVerification/" + token);
+                        + ACTIVATION_EMAIL + token);
 
-//        mailService.sendMail(new NotificationEmail("Please activate your Account",
-//                user.getEmail(), "Thank you for signing up to Spring Reddit, " +
-//                "http://localhost:8080/api/auth/accountVerification/" + token));
+        mailService.sendMail(new NotificationEmail(
+                "Please activate your Account",
+                user.getEmail(),
+                message
+        ));
 
-        mailService.sendMail(user.getEmail(), message);
+        mailService.sendMail(new NotificationEmail());
+//        mailService.sendMail(user.getEmail(), message);
         log.info("Activation email sent!");
     }
 

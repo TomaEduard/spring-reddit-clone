@@ -1,6 +1,7 @@
 package com.example.springredditclone.service;
 
 import com.example.springredditclone.exception.SpringRedditException;
+import com.example.springredditclone.model.NotificationEmail;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
@@ -19,21 +20,21 @@ public class MailService {
     private final MailContentBuilder mailContentBuilder;
 
     @Async
-    void sendMail(String recipient, String message) {
+    void sendMail(NotificationEmail notificationEmail) {
 
         MimeMessagePreparator messagePreparator = mimeMessage -> {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage);
             messageHelper.setFrom("springreddit@email.com");
-            messageHelper.setTo(recipient);
-            messageHelper.setSubject("Account Activation");
-            messageHelper.setText(mailContentBuilder.build(message));
+            messageHelper.setTo(notificationEmail.getRecipient());
+            messageHelper.setSubject(notificationEmail.getSubject());
+            messageHelper.setText(notificationEmail.getBody());
         };
 
         try {
             mailSender.send(messagePreparator);
             log.info("Activation email sent!");
         } catch (MailException e) {
-            throw new SpringRedditException("Exception occurred when sending mail to " + recipient);
+            throw new SpringRedditException("Exception occurred when sending mail to " + notificationEmail.getRecipient());
         }
 
     }
