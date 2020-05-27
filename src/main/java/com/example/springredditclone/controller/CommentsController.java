@@ -22,7 +22,6 @@ public class CommentsController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-
     @GetMapping("/by-post/{postId}")
     public ResponseEntity<List<CommentDto>> getAllCommentsForPost(@PathVariable Long postId) {
         return ResponseEntity.status(HttpStatus.OK)
