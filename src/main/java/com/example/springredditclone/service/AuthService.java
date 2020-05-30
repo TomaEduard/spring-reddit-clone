@@ -65,9 +65,6 @@ public class AuthService {
                 user.getEmail(),
                 message
         ));
-
-        mailService.sendMail(new NotificationEmail());
-//        mailService.sendMail(user.getEmail(), message);
         log.info("Activation email sent!");
     }
 
