@@ -2,6 +2,7 @@ package com.example.springredditclone.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
@@ -30,7 +31,7 @@ public class SwaggerConfiguration {
                 .title("Reddit Clone API")
                 .version("1.0")
                 .description("API for Reddit Clone Application")
-                .contact(new Contact("Eduard Toma", "http://www.localhost:8085", "eduard.daniel.toma@gmail.com"))
+                .contact(new Contact("Eduard Toma", "http://www.localhost:8080", "eduard.daniel.toma@gmail.com"))
                 .license("Apache License Version 2.0")
                 .build();
     }

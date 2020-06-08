@@ -5,6 +5,7 @@ import com.example.springredditclone.dto.RegisterRequest;
 import com.example.springredditclone.dto.AuthenticationResponse;
 import com.example.springredditclone.dto.LoginRequest;
 import com.example.springredditclone.exception.SpringRedditException;
+import com.example.springredditclone.exception.SubredditNotFoundException;
 import com.example.springredditclone.model.NotificationEmail;
 import com.example.springredditclone.model.User;
 import com.example.springredditclone.model.VerificationToken;
@@ -58,7 +59,7 @@ public class AuthService {
         String token = generateVerificationToken(user);
         String message = mailContentBuilder.build(
                 "Thank you for signing up to Spring Reddit, please click on the below url to activate your account : "
-                        + ACTIVATION_EMAIL + token);
+                        + "http://localhost:8080/api/auth/accountVerification/" + token);
 
         mailService.sendMail(new NotificationEmail(
                 "Please activate your Account",
@@ -66,6 +67,18 @@ public class AuthService {
                 message
         ));
         log.info("Activation email sent!");
+    }
+
+    @Transactional
+    public void signupWithoutEmailVerification(RegisterRequest registerRequest) {
+        User user = new User();
+        user.setUsername(registerRequest.getUsername());
+        user.setEmail(registerRequest.getEmail());
+        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        user.setEnabled(true);
+
+        userRepository.save(user);
+        log.info("User Without Email Verification Registered Successfully");
     }
 
     private String generateVerificationToken(User user) {
@@ -109,14 +122,6 @@ public class AuthService {
                 .build();
     }
 
-    @Transactional(readOnly = true)
-    public User getCurrentUser() {
-        org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User) SecurityContextHolder.
-                getContext().getAuthentication().getPrincipal();
-        return userRepository.findByUsername(principal.getUsername())
-                .orElseThrow(() -> new UsernameNotFoundException("User name not found - " + principal.getUsername()));
-    }
-
     public AuthenticationResponse refreshToken(RefreshTokenRequest refreshTokenRequest) {
         // find refreshToken from login in db, if exist generate another one with name from param
         refreshTokenService.validateRefreshToken(refreshTokenRequest.getRefreshToken());
@@ -128,5 +133,21 @@ public class AuthService {
                 .expiresAt(Instant.now().plusMillis(jwtProvider.getJwtExpirationInMillis()))
                 .username(refreshTokenRequest.getUsername())
                 .build();
+    }
+
+    // Utils
+
+    @Transactional(readOnly = true)
+    public User getCurrentUser() {
+        org.springframework.security.core.userdetails.User principal = (org.springframework.security.core.userdetails.User)
+                SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return userRepository.findByUsername(principal.getUsername())
+                .orElseThrow(() -> new UsernameNotFoundException("User name not found - " + principal.getUsername()));
+    }
+
+
+    public User getUserFromUsername(String username) {
+        return userRepository.findByUsername(username).orElseThrow(
+                () -> new SpringRedditException(("No User found with username: " + username)));
     }
 }
