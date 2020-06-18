@@ -1,6 +1,5 @@
 package com.example.springredditclone.dto;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -19,4 +18,6 @@ public class PostResponse {
     private Integer voteCount;
     private Integer commentCount;
     private String duration;
+    private boolean upVote;
+    private boolean downVote;
 }
